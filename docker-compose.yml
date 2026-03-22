@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  gaseous-server:
+    image: gaseousgames/gaseousserver:latest
+    container_name: gaseous-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - TZ=America/Bogota
+      - dbhost=db
+      - dbuser=gaseous_user
+      - dbpass=gaseous_password
+      - dbname=gaseous_db
+    ports:
+      - "80:80"
+    volumes:
+      - gaseous_data:/home/gaseous/.gaseous-server
+
+  db:
+    image: mariadb:10.6
+    container_name: gaseous-db
+    restart: unless-stopped
+    environment:
+      - MARIADB_DATABASE=gaseous_db
+      - MARIADB_USER=gaseous_user
+      - MARIADB_PASSWORD=gaseous_password
+      - MARIADB_ROOT_PASSWORD=root_password
+    volumes:
+      - gaseous_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prowt_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  gaseous_data:
+  gaseous_db_data:
