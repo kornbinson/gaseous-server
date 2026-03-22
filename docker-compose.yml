@@ -15,7 +15,7 @@ services:
       - dbpass=gaseous_password
       - dbname=gaseous_db
     ports:
-      - "80:80"
+      - "5198:80"
     volumes:
       - gaseous_data:/home/gaseous/.gaseous-server
 
